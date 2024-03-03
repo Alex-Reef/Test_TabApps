@@ -3,6 +3,7 @@ using Controllers;
 using Cysharp.Threading.Tasks;
 using Models;
 using UnityEngine;
+using Utils;
 using Zenject;
 
 namespace Views
@@ -15,8 +16,11 @@ namespace Views
         [Inject] private DataController _dataStorage;
         private Dictionary<int, ListItem> _cashedItems;
 
+        private Pool<ListItem> _pool;
+
         private void Awake()
         {
+            _pool = new Pool<ListItem>();
             _cashedItems = new Dictionary<int, ListItem>();
             _dataStorage.Data.CollectionModified += OnItemChanged;
         }
@@ -30,8 +34,9 @@ namespace Views
             }
             else
             {
-                if (_cashedItems.TryGetValue(id, out var item))
+                if (_cashedItems.Remove(id, out var item))
                 {
+                    _pool.AddToPool(item);
                     item.gameObject.SetActive(false);
                 }
             }
@@ -42,7 +47,11 @@ namespace Views
             _cashedItems.TryGetValue(dataModel.id, out var listItem);
             if (!listItem)
             {
-                listItem = Instantiate(itemPrefab, itemsParentTransform);
+                if (!_pool.TryGet(out listItem))
+                {
+                    listItem = Instantiate(itemPrefab, itemsParentTransform);
+                    _pool.AddToPool(listItem);   
+                }
                 _cashedItems.Add(dataModel.id,  listItem);
             }
             listItem.Init(dataModel);
