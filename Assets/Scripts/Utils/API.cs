@@ -5,11 +5,11 @@ using UnityEngine.Networking;
 
 namespace Utils
 {
-    public static class API
+    public class API : MonoBehaviour
     {
         private const string BaseUrl = "https://65e1fae2a8583365b317be12.mockapi.io/api/buttons";
 
-        public static async UniTask<string> GetAsync(int id = -1)
+        public async UniTask<string> GetAsync(int id = -1)
         {
             string url = id == -1 ? BaseUrl : $"{BaseUrl}/{id}";
             using UnityWebRequest webRequest = UnityWebRequest.Get(url);
@@ -26,7 +26,7 @@ namespace Utils
             }
         }
 
-        public static async UniTask<string> PostAsync(string jsonPayload)
+        public async UniTask<string> PostAsync(string jsonPayload)
         {
             using UnityWebRequest webRequest = new UnityWebRequest(BaseUrl, "POST");
             byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonPayload);
@@ -47,7 +47,7 @@ namespace Utils
             }
         }
 
-        public static async UniTask<string> PutAsync(int id, string jsonPayload)
+        public async UniTask<string> PutAsync(int id, string jsonPayload)
         {
             using UnityWebRequest webRequest = new UnityWebRequest($"{BaseUrl}/{id}", "PUT");
             byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonPayload);
@@ -68,7 +68,7 @@ namespace Utils
             }
         }
 
-        public static async UniTask DeleteAsync(int id)
+        public async UniTask DeleteAsync(int id)
         {
             using UnityWebRequest webRequest = UnityWebRequest.Delete($"{BaseUrl}/{id}");
             await webRequest.SendWebRequest();

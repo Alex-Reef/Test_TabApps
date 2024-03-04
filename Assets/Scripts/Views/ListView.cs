@@ -50,7 +50,6 @@ namespace Views
                 if (!_pool.TryGet(out listItem))
                 {
                     listItem = Instantiate(itemPrefab, itemsParentTransform);
-                    _pool.AddToPool(listItem);   
                 }
                 _cashedItems.Add(dataModel.id,  listItem);
             }
